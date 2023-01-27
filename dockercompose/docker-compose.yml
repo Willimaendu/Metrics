@@ -4,21 +4,39 @@ services:
   winservice:
     image: ${DOCKER_REGISTRY-}winservice
     ports:
-      - 8008:8008
+      - 8008:8001
     build:
       context: ../
       dockerfile: winservice/Dockerfile
   
   prometheus:
     image: prom/prometheus
+    container_name: prometheus
+    restart: always
     ports:
       - 9090:9090
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    healthcheck:
+        test: wget -q --tries=1 -O- http://localhost:9090/
+        interval: 3s
+        timeout: 3s
+        retries: 10
+        start_period: 10s
 
   grafana:
     image: grafana/grafana
+    volumes:
+        - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+        - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
     ports:
       - 3000:3000
+    depends_on:
+        prometheus:
+            condition: service_healthy
+    healthcheck:
+        test: wget -q --tries=1 -O- http://localhost:3000/
+        interval: 3s
+        timeout: 3s
+        retries: 10
+        start_period: 10s

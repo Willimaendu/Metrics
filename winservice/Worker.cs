@@ -4,7 +4,7 @@ public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
     private readonly List<object> _myList = new();
-    private readonly Random _random = new Random();
+    private static readonly Random Random = new();
 
     public Worker(ILogger<Worker> logger)
     {
@@ -15,7 +15,7 @@ public class Worker : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            if (_random.Next(0, 20) == 7)
+            if (Random.Next(0, 20) == 7)
             {
                 try
                 {

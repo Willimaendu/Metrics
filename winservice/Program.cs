@@ -9,12 +9,6 @@ IHost host = Host.CreateDefaultBuilder(args)
     {
         options.ServiceName = "WinService";
     })
-    .ConfigureAppConfiguration((hostContext, config) =>
-    {
-        config.AddJsonFile("appsettings.json", false)
-            .AddJsonFile($"appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json", true)
-            .AddEnvironmentVariables();
-    })
     .ConfigureServices((hostContext, services) =>
     {
         services.AddHostedService<Worker>();
