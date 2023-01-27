@@ -1,0 +1,24 @@
+version: '3.4'
+
+services:
+  winservice:
+    image: ${DOCKER_REGISTRY-}winservice
+    ports:
+      - 8008:8008
+    build:
+      context: ../
+      dockerfile: winservice/Dockerfile
+  
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
